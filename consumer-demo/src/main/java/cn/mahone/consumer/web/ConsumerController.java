@@ -1,13 +1,19 @@
 package cn.mahone.consumer.web;
 
 import cn.mahone.consumer.pojo.User;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.cloud.netflix.ribbon.RibbonLoadBalancedRetryFactory;
+import org.springframework.cloud.netflix.ribbon.RibbonLoadBalancerClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 
 /**
  * describe:
@@ -21,9 +27,21 @@ public class ConsumerController {
     @Autowired
     private RestTemplate restTemplate;
 
+    //@Autowired
+    //private RibbonLoadBalancerClient client;
     @GetMapping("{id}")
     public User queryById(@PathVariable("id") Long id) {
-        String url = "http://localhost:8081/user/" + id;
+        //根据服务id获取实例
+        //List<ServiceInstance> instances = discoveryClient.getInstances("user-service");
+        //从实例中取出ip和端口
+        //ServiceInstance instance = instances.get(0);
+        //随机\轮询\hash
+        //默认是轮询
+        // ServiceInstance instance = client.choose("user-service");
+        // String url = "http://"+instance.getHost()+":"+instance.getPort()+"/user/"+ id;
+
+        String url = "http://user-service/user/" + id;
+        System.out.println(url);
         User user = restTemplate.getForObject(url, User.class);
         return user;
     }
