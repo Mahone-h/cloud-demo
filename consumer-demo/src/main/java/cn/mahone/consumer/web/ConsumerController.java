@@ -1,11 +1,9 @@
 package cn.mahone.consumer.web;
 
+import cn.mahone.consumer.client.UserClient;
 import cn.mahone.consumer.pojo.User;
 
 import com.netflix.discovery.converters.Auto;
-import com.netflix.hystrix.contrib.javanica.annotation.DefaultProperties;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -27,30 +25,32 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("consumer")
-@DefaultProperties(defaultFallback = "queryByIdFallback")
+//@DefaultProperties(defaultFallback = "queryByIdFallback")
 public class ConsumerController {
-    @Autowired
-    private RestTemplate restTemplate;
+    //@Autowired
+    //private RestTemplate restTemplate;
 
-    @Autowired
-    private DiscoveryClient discoveryClient;
+    //@Autowired
+    //private DiscoveryClient discoveryClient;
     //@Autowired
     //private RibbonLoadBalancerClient client;
 
     //@HystrixCommand(fallbackMethod = "queryByIdFallback")
 
-    @GetMapping("{id}")
+    //配置超时时长
+    //@GetMapping("{id}")
     //@HystrixCommand(commandProperties = {
-    //        @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds",value = "3000")
+    //        @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds",value = "3000")//超时时间
     //})
-    @HystrixCommand
-    public String queryById(@PathVariable("id") Long id) {
 
-        String url = "http://user-service/user/" + id;
-        System.out.println(url);
-        String user = restTemplate.getForObject(url, String.class);
-        return user;
+    @Autowired
+    private UserClient userClient;
+
+    @GetMapping("{id}")
+    public User queryById(@PathVariable("id") Long id) {
+        return userClient.queryById(id);
     }
+
     public String queryByIdFallback() {
         return "不好意思,服务器太拥挤了!";
     }
@@ -63,12 +63,32 @@ public class ConsumerController {
     //    //ServiceInstance instance = instances.get(0);
     //    //随机\轮询\hash
     //    //默认是轮询
+    //   负载均衡复杂方法
     //    // ServiceInstance instance = client.choose("user-service");
     //    // String url = "http://"+instance.getHost()+":"+instance.getPort()+"/user/"+ id;
     //
     //    String url = "http://user-service/user/" + id;
     //    System.out.println(url);
     //    User user = restTemplate.getForObject(url, User.class);
+    //    return user;
+    //}
+
+    //测试熔断
+    //@HystrixCommand(
+    //        commandProperties = {
+    //            @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold",value = "10"), //熔断阈值,
+    //            @HystrixProperty(name = "circuitBreaker.sleepWindowInMilliseconds",value = "10000"),//休眠时间窗
+    //            @HystrixProperty(name = "circuitBreaker.errorThresholdPercentage",value = "60") //错误百分比
+    //})
+    //public String queryById(@PathVariable("id") Long id) {
+    //    //手动控制休眠
+    //    if(id%2==0){
+    //        throw new RuntimeException();
+    //    }
+    //
+    //    String url = "http://user-service/user/" + id;
+    //    System.out.println(url);
+    //    String user = restTemplate.getForObject(url, String.class);
     //    return user;
     //}
 }

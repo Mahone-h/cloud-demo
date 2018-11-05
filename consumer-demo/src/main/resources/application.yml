@@ -11,13 +11,24 @@ eureka:
   instance:
     prefer-ip-address: true # 当调用getHostname获取实例的hostname时，返回ip而不是host名称
     ip-address: 127.0.0.1 # 指定自己的ip信息，不指定的话会自己寻找
-hystrix:
+ribbon: #feign负载均衡配置
+  ConnectTimeout: 500 # 连接超时时间(ms)
+  ReadTimeout: 1000 # 通信超时时间(ms) 多长时间没读到数据
+#  OkToRetryOnAllOperations: true # 是否对所有操作重试
+#  MaxAutoRetriesNextServer: 1 # 同一服务不同实例的重试次数
+#  MaxAutoRetries: 1 # 同一实例的重试次数
+
+feign:
+  hystrix:
+    enabled: true # 开启Feign的熔断功能
+hystrix:  #熔断超时时长
   command:
     default:
       execution:
         isolation:
           thread:
-            timeoutInMilliseconds: 3000
+            timeoutInMilliseconds: 3000       #使用feign后仍然生效
+
 
 #user-service:
   #ribbon:

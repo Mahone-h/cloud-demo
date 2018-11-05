@@ -7,7 +7,7 @@ eureka:
   client:
     #集群时这俩删除
     # 是否注册自己的信息到EurekaServer，默认是true,本身即是服务器没必要注册自身
-    #register-with-eureka: false
+    register-with-eureka: false
     fetch-registry: false # 表示是否从eureka服务器获取注册信息，默认是true  启动时会报错
     service-url: # EurekaServer的地址，现在是自己的地址，如果是集群，需要加上其它Server的地址。
       defaultZone: http://127.0.0.1:10086/eureka
